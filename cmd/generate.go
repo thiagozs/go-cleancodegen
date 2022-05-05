@@ -25,8 +25,8 @@ var generateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(generateCmd)
 
-	generateCmd.PersistentFlags().StringVar(&Project, "project", "", "banco central database connection string")
-	generateCmd.PersistentFlags().StringVar(&Path, "path", "", "pacaembu database connection string")
+	generateCmd.PersistentFlags().StringVar(&Project, "project", "project", "Project name")
+	generateCmd.PersistentFlags().StringVar(&Path, "path", "/tmp", "Path of target of project what will be create")
 
 	generateCmd.MarkPersistentFlagRequired("project")
 	generateCmd.MarkPersistentFlagRequired("path")
