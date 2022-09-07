@@ -41,19 +41,19 @@ main.go
 .gitignore
 ```
 
-### ![#fffacd](https://via.placeholder.com/15/fffacd/000000?text=+) Domain Layer
+###  Domain Layer
 
 - The core of Clean Architecture. It says "Entities".
 
-### ![#f08080](https://via.placeholder.com/15/f08080/000000?text=+) Application Layer
+###  Application Layer
 
 - The second layer from the core. It says "Use Cases".
 
-### ![#98fb98](https://via.placeholder.com/15/98fb98/000000?text=+) Adapter Layer
+###  Adapter Layer
 
 - The third layer from the core. It says "Controllers / Gateways / Presenters".
 
-### ![#87cefa](https://via.placeholder.com/15/87cefa/000000?text=+) External Layer
+###  External Layer
 
 - The fourth layer from the core. It says "Devices / DB / External Interfaces / UI / Web".
   - **We DON'T write much codes in this layer.**
