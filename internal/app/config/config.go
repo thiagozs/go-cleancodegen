@@ -1,27 +1,34 @@
 package config
 
 var Folders = []string{
+	"api",
 	"build",
+	"config",
 	"cmd",
-	"internal/app/adapter/postgres/model",
-	"internal/app/adapter/mysql/model",
-	"internal/app/adapter/repository",
-	"internal/app/adapter/service",
-	"internal/app/application",
-	"internal/app/application/usecase",
-	"internal/app/application/service",
-	"internal/app/domain/model",
-	"internal/app/domain/repository",
-	"internal/app/domain/valueobject",
+	"docs",
+	"infra/adapter/postgres",
+	"infra/adapter/mysql",
+	"infra/adapter/cache",
+	"internal/domain",
+	"internal/services",
+	"internal/initiate",
 	"pkg/utils",
-	"tests",
+	"tmp",
+	".github",
 }
 
-var Files = []string{
-	"LICENSE",
-	"README.md",
-	"Makefile",
-	"main.go",
+var Files = map[string]string{
+	"LICENSE.md":         "license.tmpl",
+	"README.md":          "readme.tmpl",
+	"Makefile":           "makefile.tmpl",
+	"main.go":            "main.tmpl",
+	".gitignore":         "gitignore.tmpl",
+	"dockerfile":         "dockerfile.tmpl",
+	"docker-compose.yml": "docker-compose.tmpl",
+	".envrc":             "envrc.tmpl",
+	"config/config.go":   "config.tmpl",
+	"tmp/.gitkeep":       "gitkeep.tmpl",
+	"build/.gitkeep":     "gitkeep.tmpl",
 }
 
 var Cfg *CfgParams

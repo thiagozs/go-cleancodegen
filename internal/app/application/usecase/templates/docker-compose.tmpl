@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_ca
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    restart: on-failure:3 
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_SSL_MODE=${POSTGRES_SSL_MODE}
+      - PGPORT=${POSTGRES_PORT}
+    volumes:
+      - postgres_data:/data/postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DATABASE"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - postgres-network
+  
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: postgres_pgwebca
+    environment:
+      PGWEB_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@postgres:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=${POSTGRES_SSL_MODE}
+    ports:
+      - 8085:8081
+    restart: on-failure:3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "127.0.0.1", "8081"]
+      interval: 5s
+    networks:
+      - postgres-network
+
+volumes:
+  postgres_data:
+    driver: local
+  cache:
+    driver: local
+
+networks:
+  postgres-network:
+    driver: bridge

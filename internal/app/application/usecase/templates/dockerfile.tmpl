@@ -1,0 +1,20 @@
+FROM golang:1.22.1-alpine as build-stage
+RUN apk update && apk upgrade && \
+    apk --update add git make bash build-base
+RUN mkdir ~/tmp
+RUN export TMPDIR=~/tmp
+WORKDIR /app
+COPY . .
+RUN ["make", "build"]
+
+FROM alpine:latest  
+RUN apk --no-cache add ca-certificates wget unzip bash
+WORKDIR /app
+RUN mkdir -p docs assets
+
+COPY --from=build-stage /app/build/server .
+COPY --from=build-stage /app/docs/swagger.json docs/swagger.json
+COPY --from=build-stage /app/docs/swagger.yaml docs/swagger.yaml
+COPY --from=build-stage /app/docs/redoc.html docs/redoc.html
+COPY --from=build-stage /app/assets assets
+CMD ["./server", "api"]

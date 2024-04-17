@@ -1,17 +1,28 @@
 package usecase
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"time"
 
 	"github.com/lucasepe/spinner"
 
 	"github.com/thiagozs/go-cleancodegen/internal/app/config"
 	"github.com/thiagozs/go-cleancodegen/pkg/utils"
-	"github.com/thiagozs/go-utils/files"
+	"github.com/thiagozs/go-xutils"
+	"github.com/thiagozs/go-xutils/files"
 )
 
+// embed the templates folder into the binary
+//
+//go:embed templates
+var templates embed.FS
+
 func CreateScaffold() error {
+
+	u := xutils.New()
+	f := u.Files()
 
 	if config.Cfg.Path == "" {
 		config.Cfg.Path = "/tmp"
@@ -25,14 +36,15 @@ func CreateScaffold() error {
 
 	projectPath := config.Cfg.Path + "/" + config.Cfg.Project
 
-	if files.FileExists(projectPath) {
+	if f.DirectoryExist(projectPath) {
 		return fmt.Errorf("path %s not exists", config.Cfg.Path)
 	}
 
 	s := spinner.StartNew("Task 1: Processing...")
 	for _, folder := range config.Folders {
 		s.SetText(projectPath + "/" + folder)
-		if err := files.MkdirAll(projectPath + "/" + folder); err != nil {
+
+		if err := f.CreateDirAll(projectPath + "/" + folder); err != nil {
 			return err
 		}
 		time.Sleep(time.Duration(100) * time.Millisecond)
@@ -42,9 +54,15 @@ func CreateScaffold() error {
 
 	s = spinner.StartNew("Task 2: Processing...")
 
-	for _, file := range config.Files {
+	for file, tmpl := range config.Files {
 		s.SetText(projectPath + "/" + file)
-		if err := files.WriteFile(projectPath+"/"+file, []byte{}); err != nil {
+
+		tmplContent, err := ReadTemplates(f, tmpl)
+		if err != nil {
+			return err
+		}
+
+		if err := f.SaveFile(projectPath+"/"+file, tmplContent); err != nil {
 			return err
 		}
 		time.Sleep(time.Duration(100) * time.Millisecond)
@@ -53,4 +71,13 @@ func CreateScaffold() error {
 	fmt.Println("✓ Task 2: Completed")
 
 	return nil
+}
+
+func ReadTemplates(f *files.Files, filePath string) ([]byte, error) {
+	data, err := fs.ReadFile(templates, "templates/"+filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
